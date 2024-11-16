@@ -21,13 +21,13 @@ export default function Editor() {
   return (
     <div className="min-h-screen bg-gray-50">
       <NavBar />
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="col-span-2">
+      <main className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-8rem)]">
+          <div className="lg:col-span-2 h-full">
             <BlogEditor id={params.id} />
           </div>
-          <div className="col-span-1">
-            <AIAssistant />
+          <div className="h-full">
+            <AIAssistant documentId={params.id} />
           </div>
         </div>
       </main>

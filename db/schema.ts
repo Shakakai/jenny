@@ -16,6 +16,7 @@ export const documents = pgTable("documents", {
   content: text("content").notNull(),
   status: text("status").notNull().default("draft"),
   metadata: jsonb("metadata").default({}).notNull(),
+  aiInputs: jsonb("ai_inputs").default({}).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

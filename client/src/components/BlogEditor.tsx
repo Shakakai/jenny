@@ -6,8 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
-export default function BlogEditor({ id }: { id?: string }) {
+interface BlogEditorProps {
+  id?: string;
+}
+
+export default function BlogEditor({ id }: BlogEditorProps) {
   const { document, saveDocument } = useDocument(id);
   const [title, setTitle] = useState(document?.title || "");
   const [content, setContent] = useState(document?.content || "");
@@ -32,27 +37,29 @@ export default function BlogEditor({ id }: { id?: string }) {
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto mt-8">
-      <CardContent className="space-y-4 p-6">
-        <div className="space-y-2">
+    <Card className="h-full">
+      <CardContent className="p-6 h-full">
+        <div className="space-y-4 h-full flex flex-col">
           <Input
             placeholder="Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             className="text-2xl font-bold"
           />
-          <Textarea
-            placeholder="Start writing your blog post..."
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="min-h-[500px] resize-none"
-          />
-        </div>
-        <div className="flex justify-end space-x-2">
-          <Button variant="outline" onClick={forceSave}>
-            Save Draft
-          </Button>
-          <Button onClick={handleSave}>Publish</Button>
+          <ScrollArea className="flex-1">
+            <Textarea
+              placeholder="Start writing your blog post..."
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="min-h-[calc(100vh-16rem)] resize-none"
+            />
+          </ScrollArea>
+          <div className="flex justify-end space-x-2 pt-4">
+            <Button variant="outline" onClick={forceSave}>
+              Save Draft
+            </Button>
+            <Button onClick={handleSave}>Publish</Button>
+          </div>
         </div>
       </CardContent>
     </Card>
