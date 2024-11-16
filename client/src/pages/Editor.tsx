@@ -23,11 +23,11 @@ export default function Editor() {
       <NavBar />
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-8rem)]">
-          <div className="lg:col-span-2 h-full">
-            <BlogEditor id={params.id} />
-          </div>
-          <div className="h-full">
+          <div className="h-full lg:order-2">
             <AIAssistant documentId={params.id} />
+          </div>
+          <div className="lg:col-span-2 h-full lg:order-1">
+            <BlogEditor id={params.id} />
           </div>
         </div>
       </main>

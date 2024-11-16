@@ -7,6 +7,13 @@ import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDocument } from "@/hooks/use-document";
 
+interface AIInputs {
+  background: string;
+  style: string;
+  keyPoints: string;
+  instructions: string;
+}
+
 interface AIAssistantProps {
   documentId?: string;
   onContentGenerated?: (content: string) => void;
@@ -22,16 +29,70 @@ export default function AIAssistant({ documentId, onContentGenerated }: AIAssist
 
   useEffect(() => {
     if (document?.aiInputs) {
-      const aiInputs = document.aiInputs as any;
-      setBackground(aiInputs.background || "");
-      setStyle(aiInputs.style || "");
-      setKeyPoints(aiInputs.keyPoints || "");
-      setInstructions(aiInputs.instructions || "");
+      try {
+        const aiInputs = document.aiInputs as AIInputs;
+        console.log("Loading AI inputs:", aiInputs);
+        setBackground(aiInputs.background || "");
+        setStyle(aiInputs.style || "");
+        setKeyPoints(aiInputs.keyPoints || "");
+        setInstructions(aiInputs.instructions || "");
+      } catch (error) {
+        console.error("Error loading AI inputs:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load AI inputs",
+          variant: "destructive",
+        });
+      }
     }
-  }, [document]);
+  }, [document, toast]);
 
   const handleSaveInputs = async () => {
+    console.log("Attempting to save AI inputs...");
+    
     if (!documentId) {
+      console.warn("No document ID provided for saving AI inputs");
+      toast({
+        title: "Error",
+        description: "Please save the document first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const aiInputs: AIInputs = {
+      background,
+      style,
+      keyPoints,
+      instructions,
+    };
+
+    console.log("Saving AI inputs:", aiInputs);
+
+    try {
+      await saveDocument({
+        aiInputs,
+      });
+      console.log("AI inputs saved successfully");
+      toast({
+        title: "Success",
+        description: "AI inputs saved successfully",
+      });
+    } catch (error) {
+      console.error("Error saving AI inputs:", error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to save AI inputs",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleGenerate = async () => {
+    console.log("Starting content generation process...");
+    
+    if (!documentId) {
+      console.warn("No document ID provided for content generation");
       toast({
         title: "Error",
         description: "Please save the document first",
@@ -41,45 +102,23 @@ export default function AIAssistant({ documentId, onContentGenerated }: AIAssist
     }
 
     try {
-      await saveDocument({
-        aiInputs: {
-          background,
-          style,
-          keyPoints,
-          instructions,
-        },
-      });
+      // Save inputs before generating
+      await handleSaveInputs();
+
+      // TODO: Implement actual AI generation
+      console.log("AI generation placeholder - feature coming soon");
       toast({
-        title: "Success",
-        description: "AI inputs saved successfully",
+        title: "AI Generation",
+        description: "This feature is coming soon!",
       });
     } catch (error) {
+      console.error("Error in content generation:", error);
       toast({
         title: "Error",
-        description: "Failed to save AI inputs",
+        description: "Failed to generate content",
         variant: "destructive",
       });
     }
-  };
-
-  const handleGenerate = async () => {
-    if (!documentId) {
-      toast({
-        title: "Error",
-        description: "Please save the document first",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Save inputs before generating
-    await handleSaveInputs();
-
-    // TODO: Implement actual AI generation
-    toast({
-      title: "AI Generation",
-      description: "This feature is coming soon!",
-    });
   };
 
   return (
