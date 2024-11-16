@@ -38,6 +38,9 @@ export default function BlogEditor({ id }: BlogEditorProps) {
 
   return (
     <Card className="h-full">
+      <CardHeader>
+        <CardTitle>Document Content</CardTitle>
+      </CardHeader>
       <CardContent className="p-6 h-full">
         <div className="space-y-4 h-full flex flex-col">
           <Input

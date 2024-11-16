@@ -7,49 +7,24 @@ import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useDocument } from "@/hooks/use-document";
 
-interface AIInputs {
-  background: string;
-  style: string;
-  keyPoints: string;
-  instructions: string;
-}
-
 interface AIAssistantProps {
   documentId?: string;
   onContentGenerated?: (content: string) => void;
 }
 
-export default function AIAssistant({ documentId, onContentGenerated }: AIAssistantProps) {
+export default function AIAssistant({
+  documentId,
+  onContentGenerated,
+}: AIAssistantProps) {
   const { document, saveDocument } = useDocument(documentId);
-  const [background, setBackground] = useState("");
-  const [style, setStyle] = useState("");
-  const [keyPoints, setKeyPoints] = useState("");
-  const [instructions, setInstructions] = useState("");
+  const [background, setBackground] = useState(document.background || "");
+  const [style, setStyle] = useState(document.style || "");
+  const [keyPoints, setKeyPoints] = useState(document.keyPoints || "");
+  const [instructions, setInstructions] = useState(document.instructions || "");
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (document?.aiInputs) {
-      try {
-        const aiInputs = document.aiInputs as AIInputs;
-        console.log("Loading AI inputs:", aiInputs);
-        setBackground(aiInputs.background || "");
-        setStyle(aiInputs.style || "");
-        setKeyPoints(aiInputs.keyPoints || "");
-        setInstructions(aiInputs.instructions || "");
-      } catch (error) {
-        console.error("Error loading AI inputs:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load AI inputs",
-          variant: "destructive",
-        });
-      }
-    }
-  }, [document, toast]);
-
   const handleSaveInputs = async () => {
     console.log("Attempting to save AI inputs...");
-    
+
     if (!documentId) {
       console.warn("No document ID provided for saving AI inputs");
       toast({
@@ -60,18 +35,15 @@ export default function AIAssistant({ documentId, onContentGenerated }: AIAssist
       return;
     }
 
-    const aiInputs: AIInputs = {
-      background,
-      style,
-      keyPoints,
-      instructions,
-    };
-
     console.log("Saving AI inputs:", aiInputs);
 
     try {
       await saveDocument({
-        aiInputs,
+        ...document,
+        background,
+        style,
+        keyPoints,
+        instructions,
       });
       console.log("AI inputs saved successfully");
       toast({
@@ -82,7 +54,8 @@ export default function AIAssistant({ documentId, onContentGenerated }: AIAssist
       console.error("Error saving AI inputs:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to save AI inputs",
+        description:
+          error instanceof Error ? error.message : "Failed to save AI inputs",
         variant: "destructive",
       });
     }
@@ -90,7 +63,7 @@ export default function AIAssistant({ documentId, onContentGenerated }: AIAssist
 
   const handleGenerate = async () => {
     console.log("Starting content generation process...");
-    
+
     if (!documentId) {
       console.warn("No document ID provided for content generation");
       toast({
@@ -124,7 +97,7 @@ export default function AIAssistant({ documentId, onContentGenerated }: AIAssist
   return (
     <Card className="h-full">
       <CardHeader>
-        <CardTitle>AI Writing Assistant</CardTitle>
+        <CardTitle>Document Setup</CardTitle>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[calc(100vh-16rem)]">
@@ -140,10 +113,11 @@ export default function AIAssistant({ documentId, onContentGenerated }: AIAssist
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Writing Style</label>
-              <Input
-                placeholder="Describe your preferred style"
-                value={style}
+              <Textarea
+                placeholder="Enter some example text"
+                value={background}
                 onChange={(e) => setStyle(e.target.value)}
+                className="min-h-[400px]"
               />
             </div>
             <div className="space-y-2">
@@ -156,7 +130,9 @@ export default function AIAssistant({ documentId, onContentGenerated }: AIAssist
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Additional Instructions</label>
+              <label className="text-sm font-medium">
+                Additional Instructions
+              </label>
               <Textarea
                 placeholder="Any specific requirements?"
                 value={instructions}
