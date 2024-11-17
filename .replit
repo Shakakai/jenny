@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "web", "nix"]
+modules = ["nodejs-20", "web", "nix", "python-3.11"]
 run = "npm run dev"
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 
@@ -13,16 +13,23 @@ run = ["sh", "-c", "npm run dev"]
 localPort = 5000
 externalPort = 80
 
+[[ports]]
+localPort = 8000
+externalPort = 8000
+
 [packager]
 language = "nodejs"
+
 [packager.features]
 packageSearch = true
 guessImports = true
 enabledForHosting = false
 
 [languages]
+
 [languages.javascript]
 pattern = "**/{*.js,*.jsx,*.ts,*.tsx}"
+
 [languages.javascript.languageServer]
 start = "typescript-language-server --stdio"
 
