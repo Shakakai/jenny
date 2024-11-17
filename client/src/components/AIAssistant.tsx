@@ -17,25 +17,15 @@ export default function AIAssistant({
   onContentGenerated,
 }: AIAssistantProps) {
   const { document, saveDocument } = useDocument(documentId);
-  const [background, setBackground] = useState(document.background || "");
-  const [style, setStyle] = useState(document.style || "");
-  const [keyPoints, setKeyPoints] = useState(document.keyPoints || "");
-  const [instructions, setInstructions] = useState(document.instructions || "");
+  const [background, setBackground] = useState(document?.background || "");
+  const [style, setStyle] = useState(document?.style || "");
+  const [keyPoints, setKeyPoints] = useState(document?.keyPoints || "");
+  const [instructions, setInstructions] = useState(
+    document?.instructions || "",
+  );
   const { toast } = useToast();
   const handleSaveInputs = async () => {
     console.log("Attempting to save AI inputs...");
-
-    if (!documentId) {
-      console.warn("No document ID provided for saving AI inputs");
-      toast({
-        title: "Error",
-        description: "Please save the document first",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    console.log("Saving AI inputs:", aiInputs);
 
     try {
       await saveDocument({
@@ -115,7 +105,7 @@ export default function AIAssistant({
               <label className="text-sm font-medium">Writing Style</label>
               <Textarea
                 placeholder="Enter some example text"
-                value={background}
+                value={style}
                 onChange={(e) => setStyle(e.target.value)}
                 className="min-h-[400px]"
               />
@@ -142,7 +132,7 @@ export default function AIAssistant({
             </div>
             <div className="flex space-x-2">
               <Button className="flex-1" onClick={handleSaveInputs}>
-                Save Inputs
+                Save
               </Button>
               <Button className="flex-1" onClick={handleGenerate}>
                 Generate Content

@@ -12,11 +12,14 @@ export const users = pgTable("users", {
 export const documents = pgTable("documents", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   userId: integer("user_id").references(() => users.id),
-  title: text("title").notNull(),
-  content: text("content").notNull(),
+  title: text("title").default(""),
+  content: text("content").default(""),
   status: text("status").notNull().default("draft"),
+  background: text("background").default(""),
+  style: text("style").default(""),
+  keyPoints: text("key_points").default(""),
+  instructions: text("instructions").default(""),
   metadata: jsonb("metadata").default({}).notNull(),
-  aiInputs: jsonb("ai_inputs").default({}).notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

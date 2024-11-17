@@ -4,21 +4,21 @@ import { useAutosave } from "@/hooks/use-autosave";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface BlogEditorProps {
-  id?: string;
+  documentId?: string;
 }
 
-export default function BlogEditor({ id }: BlogEditorProps) {
-  const { document, saveDocument } = useDocument(id);
+export default function BlogEditor({ documentId }: BlogEditorProps) {
+  const { document, saveDocument } = useDocument(documentId);
   const [title, setTitle] = useState(document?.title || "");
   const [content, setContent] = useState(document?.content || "");
   const { toast } = useToast();
 
-  const { forceSave } = useAutosave(id, content);
+  const { forceSave } = useAutosave(documentId, content);
 
   const handleSave = async () => {
     try {
