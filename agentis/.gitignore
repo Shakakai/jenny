@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Node / pnpm
+node_modules/
+
+# Rust / Tauri
+src-tauri/target/
+src-tauri/binaries/agentis-backend-*
+
+# Build outputs
+dist/
+
+# Environment
+.env
+
+# IDE
+.DS_Store
+.vscode/
+.idea/
