@@ -1,3 +1,250 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── DuckBlind design tokens ────────────────────────────────────── */
+:root {
+  --bg:      #0e0c08;   /* dark soil      */
+  --surface: #181410;   /* bark            */
+  --border:  #272218;   /* dark wood       */
+  --text:    #ccc0a2;   /* warm parchment  */
+  --dim:     #66583e;   /* weathered wood  */
+  --moss:    #8db840;   /* olive / foliage */
+  --amber:   #c99235;   /* golden reed     */
+  --orange:  #d85f28;   /* hunter orange   */
+  --red:     #c44040;
+
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-sans: 'IBM Plex Sans', system-ui, sans-serif;
+}
+
+/* ── Base reset ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── Subtle grain overlay ───────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  opacity: 0.35;
+}
+
+/* ── Typography ─────────────────────────────────────────────────── */
+h1, h2, h3, h4 {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+  line-height: 1.2;
+}
+
+p { margin: 0; }
+
+a {
+  color: var(--amber);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+
+code, pre, .mono {
+  font-family: var(--font-mono);
+}
+
+/* ── Scrollbar ──────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--dim); }
+
+/* ── Animations ─────────────────────────────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes pulse-moss {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(141,184,64,0.2); }
+  50%       { box-shadow: 0 0 0 8px rgba(141,184,64,0); }
+}
+
+/* ── Cursor blink ───────────────────────────────────────────────── */
+.cursor {
+  display: inline-block;
+  width: 0.6ch;
+  height: 1.1em;
+  background: var(--moss);
+  vertical-align: text-bottom;
+  animation: blink 1s step-end infinite;
+  margin-left: 1px;
+}
+
+/* ── Terminal window ────────────────────────────────────────────── */
+.terminal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.7;
+}
+
+.terminal-bar {
+  background: var(--border);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.terminal-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.terminal-body {
+  padding: 20px 24px;
+}
+
+/* Terminal line types */
+.t-cmd     { color: var(--text); }
+.t-success { color: var(--moss); }
+.t-dim     { color: var(--dim); }
+.t-output  { color: var(--text); opacity: 0.8; }
+.t-json    { color: var(--amber); }
+.t-blank   { height: 0.5em; }
+.t-loading { color: var(--orange); }
+
+/* ── Section layout ─────────────────────────────────────────────── */
+.section {
+  padding: 96px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--moss);
+  margin-bottom: 16px;
+}
+
+/* ── Dot grid backgrounds ───────────────────────────────────────── */
+.dot-grid {
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--orange);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+.btn-primary:hover  { opacity: 0.88; transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.btn-ghost:hover { border-color: var(--dim); color: var(--moss); }
+
+/* ── Cards ──────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 28px;
+  transition: border-color 0.2s;
+}
+.card:hover { border-color: rgba(141,184,64,0.3); }
+
+/* ── Form inputs ────────────────────────────────────────────────── */
+.input-mono {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  padding: 12px 16px;
+  outline: none;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+.input-mono::placeholder { color: var(--dim); }
+.input-mono:focus { border-color: var(--moss); }
+
+/* ── Code blocks ────────────────────────────────────────────────── */
+.code-block {
+  background: #0b0a07;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 20px 24px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.8;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* ── Dividers ───────────────────────────────────────────────────── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0;
+}
