@@ -45,3 +45,13 @@ export const insertDocumentHistorySchema = createInsertSchema(documentHistory);
 export const selectDocumentHistorySchema = createSelectSchema(documentHistory);
 export type InsertDocumentHistory = z.infer<typeof insertDocumentHistorySchema>;
 export type DocumentHistory = z.infer<typeof selectDocumentHistorySchema>;
+
+export const emailSubscribers = pgTable("email_subscribers", {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  email: text("email").unique().notNull(),
+  source: text("source").default("landing"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertEmailSubscriberSchema = createInsertSchema(emailSubscribers).pick({ email: true });
+export type InsertEmailSubscriber = z.infer<typeof insertEmailSubscriberSchema>;

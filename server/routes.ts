@@ -1,77 +1,27 @@
 import { Express } from "express";
-import { setupAuth } from "./auth";
 import { db } from "db";
-import { documents, documentHistory } from "db/schema";
-import { eq } from "drizzle-orm";
+import { emailSubscribers, insertEmailSubscriberSchema } from "db/schema";
 
 export function registerRoutes(app: Express) {
-  setupAuth(app);
+  app.post("/api/subscribe", async (req, res) => {
+    const parsed = insertEmailSubscriberSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return res.status(400).json({ message: "Invalid email address." });
+    }
 
-  // Document CRUD operations
-  app.get("/api/documents", async (req, res) => {
-    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
-    
-    const userDocs = await db.query.documents.findMany({
-      where: eq(documents.userId, req.user.id),
-      orderBy: [documents.updatedAt],
-    });
-    res.json(userDocs);
-  });
-
-  app.post("/api/documents", async (req, res) => {
-    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
-    
-    const { title, content, metadata } = req.body;
-    const [newDoc] = await db.insert(documents)
-      .values({
-        title,
-        content,
-        metadata,
-        userId: req.user.id,
-      })
-      .returning();
-    res.json(newDoc);
-  });
-
-  app.put("/api/documents/:id", async (req, res) => {
-    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
-    
-    const { id } = req.params;
-    const { title, content, metadata } = req.body;
-
-    // Save to history
-    await db.insert(documentHistory).values({
-      documentId: parseInt(id),
-      content: (await db.query.documents.findFirst({
-        where: eq(documents.id, parseInt(id)),
-      }))?.content || "",
-    });
-
-    // Update document
-    const [updatedDoc] = await db.update(documents)
-      .set({ title, content, metadata, updatedAt: new Date() })
-      .where(eq(documents.id, parseInt(id)))
-      .returning();
-    
-    res.json(updatedDoc);
-  });
-
-  app.get("/api/documents/:id/history", async (req, res) => {
-    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
-    
-    const { id } = req.params;
-    const history = await db.query.documentHistory.findMany({
-      where: eq(documentHistory.documentId, parseInt(id)),
-      orderBy: [documentHistory.createdAt],
-    });
-    res.json(history);
-  });
-
-  app.delete("/api/documents/:id", async (req, res) => {
-    if (!req.user) return res.status(401).json({ message: "Unauthorized" });
-    
-    const { id } = req.params;
-    await db.delete(documents).where(eq(documents.id, parseInt(id)));
-    res.json({ success: true });
+    try {
+      await db.insert(emailSubscribers).values({
+        email: parsed.data.email,
+        source: "landing",
+      });
+      return res.status(201).json({ message: "You're on the list." });
+    } catch (err: any) {
+      // Unique constraint violation — already subscribed
+      if (err?.code === "23505") {
+        return res.status(200).json({ message: "Already subscribed." });
+      }
+      console.error("Subscribe error:", err);
+      return res.status(500).json({ message: "Something went wrong. Try again." });
+    }
   });
 }
